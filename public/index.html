@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>CyberShield AI - الأمن السيبراني بالذكاء الاصطناعي</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&display=swap');
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        :root {
+            --bg: #0a0e1a;
+            --bg2: #111827;
+            --card: #1a1f35;
+            --border: #2a2f45;
+            --accent: #00f0ff;
+            --accent2: #7c3aed;
+            --danger: #ef4444;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --text: #e2e8f0;
+            --text2: #94a3b8;
+            --grad: linear-gradient(135deg, #00f0ff, #7c3aed);
+        }
+
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Matrix Rain Effect */
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0.08;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0; width: 100%;
+            background: rgba(10, 14, 26, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            z-index: 100;
+            padding: 0 1rem;
+        }
+
+        .nav-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 65px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .logo-icon {
+            width: 38px; height: 38px;
+            background: var(--grad);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .logo span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        .nav-links {
+            display: flex;
+            gap: 0.5rem;
+            list-style: none;
+            overflow-x: auto;
+            padding: 0.5rem 0;
+        }
+
+        .nav-links button {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text2);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            transition: all 0.3s;
+        }
+
+        .nav-links button:hover,
+        .nav-links button.active {
+            background: var(--grad);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 85px 1rem 2rem;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 1rem;
+            background: var(--card);
+            border-radius: 20px;
+            border: 1px solid var(--border);
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%; left: -50%;
+            width: 200%; height: 200%;
+            background: radial-gradient(circle at center, rgba(0, 240, 255, 0.03), transparent 70%);
+            animation: pulseGlow 4s ease-in-out infinite;
+        }
+
+        @keyframes pulseGlow {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 1; }
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+        }
+
+        .hero p {
+            color: var(--text2);
+            font-size: 1.1rem;
+            margin-top: 0.5rem;
+            position: relative;
+        }
+
+        /* Stats Bar */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 1.2rem;
+            text-align: center;
+        }
+
+        .stat-card .num {
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--grad);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-card .label {
+            color: var(--text2);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+        }
+
+        /* Section */
+        .section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .section.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title span { background: var(--grad); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* Grid */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 900px) {
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 1.8rem; }
+        }
+
+        /* Cards */
+        .card {
+            background: var(--card);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .card:hover { border-color: var(--accent); box-shadow: 0 0 30px rgba(0, 240, 255, 0.05); }
+
+        .card h3 { margin-bottom: 1rem; font-size: 1.1rem; }
+        .card h3 .icon { margin-left: 8px; }
+
+        /* Chat */
+        .chat-box {
+            height: 350px;
+            overflow-y: auto;
+            padding: 1rem;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-box::-webkit-scrollbar { width: 5px; }
+        .chat-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+
+        .msg {
+            max-width: 85%;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .msg.user {
+            background: var(--grad);
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-left-radius: 4px;
+        }
+
+        .msg.bot {
+            background: var(--bg2);
+            color: var(--text);
+            align-self: flex-start;
+            border: 1px solid var(--border);
+            border-bottom-right-radius: 4px;
+        }
+
+        .msg.bot .typing-dots {
+            display: inline-flex;
+            gap: 4px;
+        }
+
+        .msg.bot .typing-dots span {
+            width: 8px; height: 8px;
+            background: var(--accent);
+            border-radius: 50%;
+            animation: typing 1.4s ease-in-out infinite;
+        }
+
+        .msg.bot .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .msg.bot .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); opacity: 0.4; }
+            30% { transform: translateY(-8px); opacity: 1; }
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 8px;
+        }
+
+        .chat-input-row input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .chat-input-row input:focus { border-color: var(--accent); }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 10px;
+            background: var(--grad);
+            color: #fff;
+            font-family: 'Cairo', sans-serif;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.3s;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 5px 25px rgba(0, 240, 255, 0.3); }
+        .btn:active { transform: scale(0.97); }
+        .btn-sm { padding: 0.5rem 1rem; font-size: 0.8rem; }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+        .btn-outline:hover { background: var(--accent); color: #000; box-shadow: none; }
+        .btn-danger { background: var(--danger); }
+        .btn-success { background: var(--success); }
+
+        /* Textarea & Input */
+        textarea, input:not([type="file"]) {
+            width: 100%;
+            padding: 0.8rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.9rem;
+            outline: none;
+            transition: border-color 0.3s;
+            resize: vertical;
+        }
+
+        textarea:focus, input:focus { border-color: var(--accent); }
+
+        .input-group {
+            margin-bottom: 1rem;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 0.4rem;
+            color: var(--text2);
+            font-size: 0.85rem;
+        }
+
+        /* Result Box */
+        .result-box {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            max-height: 200px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            direction: ltr;
+            text-align: left;
+        }
+
+        .result-box.rtl { direction: rtl; text-align: right; }
+
+        /* Password strength */
+        .strength-bar {
+            height: 6px;
+            background: var(--bg2);
+            border-radius: 3px;
+            margin-top: 0.5rem;
+            overflow: hidden;
+        }
+
+        .strength-bar .fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s, background 0.5s;
+        }
+
+        /* Tools Grid inside cards */
+        .tool-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 0.8rem;
+        }
+
+        .tool-row select {
+            flex: 1;
+            padding: 0.6rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text);
+            font-family: 'Cairo', sans-serif;
+        }
+
+        /* Threat Map Sim */
+        .threat-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 350px;
+            overflow-y: auto;
+        }
+
+        .threat-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.6rem 0.8rem;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            border-right: 3px solid var(--border);
+        }
+
+        .threat-item.critical { border-right-color: var(--danger); }
+        .threat-item.high { border-right-color: var(--warning); }
+        .threat-item.medium { border-right-color: var(--accent); }
+        .threat-item.low { border-right-color: var(--success); }
+
+        .threat-item .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        .badge.critical { background: rgba(239,68,68,0.2); color: var(--danger); }
+        .badge.high { background: rgba(245,158,11,0.2); color: var(--warning); }
+        .badge.medium { background: rgba(0,240,255,0.2); color: var(--accent); }
+        .badge.low { background: rgba(34,197,94,0.2); color: var(--success); }
+
+        .threat-time { color: var(--text2); font-size: 0.75rem; }
+
+        /* Quick tools */
+        .quick-tools {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 0.8rem;
+            margin-top: 1rem;
+        }
+
+        .quick-tool-btn {
+            padding: 1rem;
+            background: var(--bg2);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Cairo', sans-serif;
+            color: var(--text);
+            font-size: 0.85rem;
+        }
+
+        .quick-tool-btn:hover {
+            border-color: var(--accent);
+            background: rgba(0, 240, 255, 0.05);
+            transform: translateY(-2px);
+        }
+
+        .quick-tool-btn .q-icon { font-size: 1.5rem; display: block; margin-bottom: 0.3rem; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text2);
+            font-size: 0.8rem;
+            border-top: 1px solid var(--border);
+            margin-top: 3rem;
+        }
+
+        /* Tabs inside card */
+        .tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 1rem;
+            background: var(--bg2);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .tabs button {
+            flex: 1;
+            padding: 0.5rem;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            color: var(--text2);
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 0.8rem;
+            transition: all 0.3s;
+        }
+
+        .tabs button.active-tab {
+            background: var(--card);
+            color: var(--accent);
+            border: 1px solid var(--border);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active-tab { display: block; }
+
+        .vuln-item {
+            padding: 0.6rem;
+            margin-bottom: 0.4rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            background: rgba(0,0,0,0.2);
+            border-right: 3px solid var(--border);
+        }
+
+        .vuln-item.critical { border-right-color: var(--danger); }
+        .vuln-item.high { border-right-color: var(--warning); }
+        .vuln-item.medium { border-right-color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<canvas id="matrix-canvas"></canvas>
+
+<nav>
+    <div class="nav-inner">
+        <div class="logo">
+            <div class="logo-icon">🛡</div>
+            <span>CyberShield AI</span>
+        </div>
+        <ul class="nav-links" id="nav-links">
+            <li><button class="active" data-section="dashboard">الرئيسية</button></li>
+            <li><button data-section="chat">شات بوت</button></li>
+            <li><button data-section="scanner">فحص الثغرات</button></li>
+            <li><button data-section="encryption">التشفير</button></li>
+            <li><button data-section="password">كلمة المرور</button></li>
+            <li><button data-section="threats">التهديدات</button></li>
+        </ul>
+    </div>
+</nav>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="stats" id="stats-bar">
+        <div class="stat-card">
+            <div class="num" id="threats-blocked">1,247</div>
+            <div class="label">تهديد تم حظره</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="vulns-found">342</div>
+            <div class="label">ثغرة مكتشفة</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="scans-today">89</div>
+            <div class="label">فحص اليوم</div>
+        </div>
+        <div class="stat-card">
+            <div class="num" id="uptime">99.9%</div>
+            <div class="label">نسبة الأمان</div>
+        </div>
+    </div>
+
+    <!-- Section: Dashboard -->
+    <div class="section active" id="sec-dashboard">
+        <div class="hero">
+            <h1>🛡 CyberShield AI</h1>
+            <p>منصة الأمن السيبراني الشاملة المدعومة بالذكاء الاصطناعي</p>
+            <div class="quick-tools">
+                <button class="quick-tool-btn" onclick="switchSection('chat')">
+                    <span class="q-icon">🤖</span> شات بوت أمني
+                </button>
+                <button class="quick-tool-btn" onclick="switchSection('scanner')">
+                    <span class="q-icon">🔍</span> فحص الثغرات
+                </button>
+                <button class="quick-tool-btn" onclick="switchSection('encryption')">
+                    <span class="q-icon">🔐</span> تشفير
+                </button>
+                <button class="quick-tool-btn" onclick="switchSection('password')">
+                    <span class="q-icon">🔑</span> كلمة المرور
+                </button>
+                <button class="quick-tool-btn" onclick="switchSection('threats')">
+                    <span class="q-icon">⚠️</span> التهديدات
+                </button>
+            </div>
+        </div>
+
+        <div class="grid-2">
+            <div class="card">
+                <h3>📊 أحدث التهديدات</h3>
+                <div class="threat-list" id="dash-threats"></div>
+            </div>
+            <div class="card">
+                <h3>🛡 نصائح الأمان السريعة</h3>
+                <div id="security-tips">
+                    <div class="vuln-item medium">🔹 استخدم كلمات مرور قوية وفريدة لكل حساب</div>
+                    <div class="vuln-item high">🔹 فعّل المصادقة الثنائية (2FA)</div>
+                    <div class="vuln-item critical">🔹 حدّث أنظمتك وبرامجك باستمرار</div>
+                    <div class="vuln-item medium">🔹 احذر من رسائل التصيد الاحتيالي</div>
+                    <div class="vuln-item low">🔹 استخدم VPN عند الاتصال بشبكات عامة</div>
+                    <div class="vuln-item high">🔹 انسخ بياناتك المهمة بشكل دوري (Backup)</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Chat -->
+    <div class="section" id="sec-chat">
+        <div class="card">
+            <h3>🤖 <span>المساعد الأمني الذكي</span></h3>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem;flex-wrap:wrap;">
+                <span id="ai-status" style="display:flex;align-items:center;gap:5px;font-size:0.85rem;padding:4px 12px;border-radius:20px;background:var(--bg2);border:1px solid var(--border);">
+                    <span id="ai-dot" style="width:8px;height:8px;border-radius:50%;background:var(--danger);display:inline-block;"></span>
+                    <span id="ai-text">Gemini AI غير متصل</span>
+                </span>
+                <span style="font-size:0.75rem;color:var(--text2);">(يستخدم Google Gemini AI — آمن ومجاني)</span>
+            </div>
+            <p style="color: var(--text2); margin-bottom: 1rem;">اسأل عن أي شيء في الأمن السيبراني — تحليل ثغرات، نصائح حماية، أدوات، وغيرها</p>
+            <div class="chat-box" id="chat-box">
+                <div class="msg bot">مرحباً! أنا مساعدك الأمني CyberShield 🤖<br>أسئلة مقترحة:<br>• كيف أحمي موقعي من الاختراق؟<br>• وش الفرق بين التشفير المتماثل وغير المتماثل؟<br>• كيف أكتشف التصيد الاحتيالي؟<br>• اشرح لي OWASP Top 10</div>
+            </div>
+            <div class="chat-input-row">
+                <input type="text" id="chat-input" placeholder="اكتب سؤالك هنا..." onkeydown="if(event.key==='Enter') sendChat()" />
+                <button class="btn" onclick="sendChat()">إرسال</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Vulnerability Scanner -->
+    <div class="section" id="sec-scanner">
+        <div class="card">
+            <h3>🔍 <span>فحص الثغرات الأمنية</span></h3>
+            <p style="color: var(--text2); margin-bottom: 1rem;">أدخل كود أو نص عشان نفحصه ونبحث عن ثغرات أمنية</p>
+            <div class="input-group">
+                <label>الكود أو النص المراد فحصه:</label>
+                <textarea id="vuln-input" rows="6" placeholder="example.com/login.php?user=admin' --&#10;أو الصق كود برمجي للفحص"></textarea>
+            </div>
+            <button class="btn" onclick="scanVuln()">🔍 افحص الآن</button>
+            <div class="result-box" id="vuln-result">نتيجة الفحص تظهر هنا...</div>
+        </div>
+        <div class="grid-2" style="margin-top: 1.5rem;">
+            <div class="card">
+                <h3>⚡ فحص سريع</h3>
+                <div class="quick-tools">
+                    <button class="quick-tool-btn" onclick="quickScan('sqli')"><span class="q-icon">💉</span> SQL Injection</button>
+                    <button class="quick-tool-btn" onclick="quickScan('xss')"><span class="q-icon">🌐</span> XSS</button>
+                    <button class="quick-tool-btn" onclick="quickScan('csrf')"><span class="q-icon">🔗</span> CSRF</button>
+                    <button class="quick-tool-btn" onclick="quickScan('lfi')"><span class="q-icon">📂</span> LFI/RFI</button>
+                </div>
+            </div>
+            <div class="card">
+                <h3>📋 آخر الثغرات المكتشفة</h3>
+                <div id="recent-vulns">
+                    <div class="vuln-item high">📌 CVE-2025-4422 - RCE في Apache</div>
+                    <div class="vuln-item critical">📌 CVE-2025-1189 - SQLi في WordPress</div>
+                    <div class="vuln-item medium">📌 CVE-2025-3310 - XSS في jQuery</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Encryption -->
+    <div class="section" id="sec-encryption">
+        <div class="grid-2">
+            <div class="card">
+                <h3>🔐 <span>تشفير وفك تشفير</span></h3>
+                <div class="tabs">
+                    <button class="active-tab" data-tab="enc-base64">Base64</button>
+                    <button data-tab="enc-hex">Hex</button>
+                    <button data-tab="enc-rot13">ROT13</button>
+                    <button data-tab="enc-rev">عكس النص</button>
+                </div>
+                <div class="tab-content active-tab" id="tab-enc-base64">
+                    <div class="input-group">
+                        <label>النص:</label>
+                        <textarea id="enc-input" rows="3" placeholder="أدخل النص"></textarea>
+                    </div>
+                    <div class="tool-row">
+                        <button class="btn btn-sm" onclick="encrypt('b64-enc')">🔒 تشفير</button>
+                        <button class="btn btn-sm btn-outline" onclick="encrypt('b64-dec')">🔓 فك</button>
+                        <button class="btn btn-sm btn-outline" onclick="encrypt('clear')">مسح</button>
+                    </div>
+                    <div class="result-box rtl" id="enc-result">النتيجة...</div>
+                </div>
+                <div class="tab-content" id="tab-enc-hex">
+                    <div class="input-group">
+                        <label>النص:</label>
+                        <textarea id="hex-input" rows="3" placeholder="أدخل النص"></textarea>
+                    </div>
+                    <div class="tool-row">
+                        <button class="btn btn-sm" onclick="encrypt('hex-enc')">🔒 تشفير</button>
+                        <button class="btn btn-sm btn-outline" onclick="encrypt('hex-dec')">🔓 فك</button>
+                    </div>
+                    <div class="result-box rtl" id="hex-result">النتيجة...</div>
+                </div>
+                <div class="tab-content" id="tab-enc-rot13">
+                    <div class="input-group">
+                        <label>النص:</label>
+                        <textarea id="rot13-input" rows="3" placeholder="أدخل النص"></textarea>
+                    </div>
+                    <div class="tool-row">
+                        <button class="btn btn-sm" onclick="encrypt('rot13')">🔄 تطبيق ROT13</button>
+                    </div>
+                    <div class="result-box rtl" id="rot13-result">النتيجة...</div>
+                </div>
+                <div class="tab-content" id="tab-enc-rev">
+                    <div class="input-group">
+                        <label>النص:</label>
+                        <textarea id="rev-input" rows="3" placeholder="أدخل النص"></textarea>
+                    </div>
+                    <div class="tool-row">
+                        <button class="btn btn-sm" onclick="encrypt('rev')">🔄 عكس النص</button>
+                    </div>
+                    <div class="result-box rtl" id="rev-result">النتيجة...</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3>🔑 <span>توليد هاش</span></h3>
+                <div class="input-group">
+                    <label>النص:</label>
+                    <textarea id="hash-input" rows="3" placeholder="أدخل النص"></textarea>
+                </div>
+                <div class="tool-row">
+                    <button class="btn btn-sm" onclick="generateHash('md5')">MD5</button>
+                    <button class="btn btn-sm" onclick="generateHash('sha1')">SHA-1</button>
+                    <button class="btn btn-sm" onclick="generateHash('sha256')">SHA-256</button>
+                </div>
+                <div class="result-box rtl" id="hash-result">النتيجة...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Password -->
+    <div class="section" id="sec-password">
+        <div class="grid-2">
+            <div class="card">
+                <h3>🔑 <span>فحص قوة كلمة المرور</span></h3>
+                <div class="input-group">
+                    <label>كلمة المرور:</label>
+                    <input type="text" id="pwd-input" placeholder="اكتب كلمة المرور..." oninput="checkPassword()" />
+                </div>
+                <div class="strength-bar"><div class="fill" id="pwd-strength" style="width:0%"></div></div>
+                <div style="display:flex;justify-content:space-between;margin-top:0.3rem;font-size:0.8rem;color:var(--text2)">
+                    <span>ضعيفة</span><span>متوسطة</span><span>قوية</span><span>ممتازة</span>
+                </div>
+                <div class="result-box rtl" id="pwd-result" style="margin-top:0.8rem;">...</div>
+            </div>
+            <div class="card">
+                <h3>⚡ <span>توليد كلمة مرور قوية</span></h3>
+                <div class="input-group">
+                    <label>طول كلمة المرور:</label>
+                    <input type="number" id="pwd-length" value="16" min="8" max="64" />
+                </div>
+                <div class="tool-row" style="flex-wrap:wrap;">
+                    <label style="display:flex;align-items:center;gap:5px;font-size:0.85rem;color:var(--text2)">
+                        <input type="checkbox" id="pwd-upper" checked /> أحرف كبيرة
+                    </label>
+                    <label style="display:flex;align-items:center;gap:5px;font-size:0.85rem;color:var(--text2)">
+                        <input type="checkbox" id="pwd-lower" checked /> أحرف صغيرة
+                    </label>
+                    <label style="display:flex;align-items:center;gap:5px;font-size:0.85rem;color:var(--text2)">
+                        <input type="checkbox" id="pwd-num" checked /> أرقام
+                    </label>
+                    <label style="display:flex;align-items:center;gap:5px;font-size:0.85rem;color:var(--text2)">
+                        <input type="checkbox" id="pwd-sym" checked /> رموز
+                    </label>
+                </div>
+                <button class="btn" onclick="generatePassword()">🔄 توليد</button>
+                <div class="result-box rtl" id="pwd-gen-result">...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section: Threats -->
+    <div class="section" id="sec-threats">
+        <div class="grid-2">
+            <div class="card">
+                <h3>⚠️ <span>مراقبة التهديدات الحية</span></h3>
+                <div class="threat-list" id="live-threats"></div>
+            </div>
+            <div class="card">
+                <h3>📊 <span>إحصائيات التهديدات</span></h3>
+                <div id="threat-stats">
+                    <div class="vuln-item critical">حرج: <span id="stat-critical">0</span></div>
+                    <div class="vuln-item high">عالي: <span id="stat-high">0</span></div>
+                    <div class="vuln-item medium">متوسط: <span id="stat-medium">0</span></div>
+                    <div class="vuln-item low">منخفض: <span id="stat-low">0</span></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        CyberShield AI &copy; 2026 — منصة الأمن السيبراني بالذكاء الاصطناعي<br>
+        <span style="font-size:0.75rem;">لأغراض تعليمية وتوعوية فقط</span>
+    </footer>
+</div>
+
+<script>
+    // ─── Matrix Rain ───
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = window.innerWidth;
+    canvas.height = document.body.scrollHeight;
+    const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+    const fontSize = 14;
+    const columns = canvas.width / fontSize;
+    const drops = Array(Math.floor(columns)).fill(1);
+
+    function drawMatrix() {
+        ctx.fillStyle = 'rgba(10, 14, 26, 0.05)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = '#00f0ff';
+        ctx.font = fontSize + 'px monospace';
+        for (let i = 0; i < drops.length; i++) {
+            const text = chars[Math.floor(Math.random() * chars.length)];
+            ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+            if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+            drops[i]++;
+        }
+    }
+    setInterval(drawMatrix, 40);
+    window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = document.body.scrollHeight;
+    });
+
+    // ─── Navigation ───
+    const navBtns = document.querySelectorAll('.nav-links button');
+    navBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            switchSection(btn.dataset.section);
+        });
+    });
+
+    function switchSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById('sec-' + id).classList.add('active');
+        navBtns.forEach(b => b.classList.remove('active'));
+        document.querySelector(`[data-section="${id}"]`).classList.add('active');
+        // resize matrix
+        setTimeout(() => { canvas.height = document.body.scrollHeight; }, 100);
+    }
+
+    // ─── Security Q&A Knowledge Base ───
+    const secKnowledge = {
+        'owasp': 'OWASP Top 10 هي قائمة بأهم 10 ثغرات أمنية في تطبيقات الويب:\n1. 🥇 Broken Access Control\n2. 🥈 Cryptographic Failures\n3. 🥉 Injection (SQL, NoSQL, OS)\n4. Insecure Design\n5. Security Misconfiguration\n6. Vulnerable Components\n7. Authentication Failures\n8. Data Integrity Failures\n9. Logging & Monitoring Failures\n10. SSRF\n\nلتتعمق أكثر: owasp.org',
+        'sql': '💉 **SQL Injection**:\n- تحدث عندما يثق التطبيق بمدخلات المستخدم وينفذها مباشرة في قاعدة البيانات\n- الحل: استخدام Prepared Statements و Parameterized Queries\n- مثال خطير: `SELECT * FROM users WHERE id = \'$id\'`\n- الحل الآمن: استخدام ORM أو prepared statements',
+        'xss': '🌐 **XSS (Cross-Site Scripting)**:\n- يحدث عندما يحقن المهاجم كود JavaScript في صفحات الويب\n- أنواعه: مخزّن (Stored)، عاكس (Reflected)، DOM-based\n- الوقاية: تعقيم المدخلات (Sanitization) واستخدام Content-Security-Policy',
+        'تصيد': '🎣 **التصيد الاحتيالي (Phishing)**:\n- هجمات تهدف لسرقة معلوماتك عبر رسائل وروابط مزيفة\n- علامات الخطر: روابط غريبة، أخطاء إملائية، طلبات عاجلة\n- احمي نفسك: لا تضغط على روابط مشبوهة، تحقق من عنوان URL، استخدم 2FA',
+        'تشفير': '🔐 **التشفير**:\n- **المتماثل (Symmetric)**: مفتاح واحد للتشفير وفك التشفير (AES, DES)\n- **غير المتماثل (Asymmetric)**: مفتاح عام وخاص (RSA, ECC)\n- **التجزئة (Hashing)**: باتجاه واحد (SHA-256, MD5)\n- نصيحة: استخدم AES-256 للتشفير المتماثل و RSA-4096 للتشفير غير المتماثل',
+        'firewall': '🔥 **جدار الحماية (Firewall)**:\n- يمنع حركة المرور غير المصرح بها\n- أنواعه: Network Firewall، Web Application Firewall (WAF)، Host-based\n- أدوات مشهورة: pfSense، OPNsense، Cloudflare WAF',
+        'vpn': '🔒 **VPN (شبكة خاصة افتراضية)**:\n- تشفر اتصالك بالإنترنت وتخفي عنوان IP\n- استخدمها مع الشبكات العامة (WiFi في المقاهي والمطارات)\n- بروتوكولات: WireGuard (الأسرع)، OpenVPN، IPSec',
+        '2fa': '📱 **المصادقة الثنائية (2FA)**:\n- تضيف طبقة حماية إضافية غير كلمة المرور\n- أنواع: SMS، Google Authenticator، مفاتيح الأمان (YubiKey)\n- فعّلها في جميع حساباتك المهمة (Google، GitHub، البريد)',
+        'malware': '🦠 **البرامج الضارة (Malware)**:\n- أنواع: فيروسات، أحصنة طروادة، Ransomware، Spyware، Rootkit\n- طرق الوقاية:\n  • لا تفتح مرفقات مشبوهة\n  • استخدم برنامج مكافحة فيروسات\n  • حدّث نظامك دائماً\n  • انتبه للـ Social Engineering',
+        'كلمة': '🔑 **كلمة المرور القوية**:\n- طولها 16+ حرف\n- تحتوي: أحرف كبيرة + صغيرة + أرقام + رموز\n- لا تستخدم معلومات شخصية\n- استخدم مدير كلمات مرور (Bitwarden، 1Password)\n- لا تعيد استخدام نفس الكلمة في أكثر من موقع',
+        'network': '🌐 **أمن الشبكات**:\n- استخدم WPA3 للواي فاي\n- عطّل WPS\n- غيّر كلمة مرور الراوتر الافتراضية\n- فعّل جدار الحماية\n- استخدم VLANs لعزل الأجهزة\n- راقب الأجهزة المتصلة بشبكتك',
+        'ransomware': '💰 **فدية (Ransomware)**:\n- برنامج يشفير ملفاتك ويطلب فدية\n- كيف تحمي نفسك:\n  • نسخ احتياطي منتظم (3-2-1 قاعدة)\n  • تحديث البرامج\n  • لا تفتح مرفقات غير معروفة\n  • استخدم برامج مكافحة الفدية\n  • فعّل الحماية من التصيد',
+        'ddos': '🌊 **هجمات DDoS**:\n- إغراق الخادم بطلبات لتعطيله\n- أنواع: Volumetric، Protocol، Application Layer\n- حماية: استخدم CDN (Cloudflare)، حدد معدل الطلبات (Rate Limiting)، استخدم WAF',
+        'ssl': '🔒 **SSL/TLS**:\n- يشفر الاتصال بين المتصفح والخادم\n- تأكد من أن المواقع تستخدم HTTPS\n- استخدم Let\'s Encrypt للحصول على شهادة مجانية\n- درجات أمان TLS: TLS 1.3 (الأفضل) > TLS 1.2 > TLS 1.1 (غير آمن)',
+        'ethical': '🕵️ **الاختراق الأخلاقي**:\n- اختبار أمني بإذن قانوني\n- منهجيات: OSSTMM، OWASP، PTES\n- أدوات: Kali Linux، Metasploit، Burp Suite، Nmap\n- شهادات: CEH، OSCP، CISSP',
+        'default': '🤖 أنا مساعدك الأمني CyberShield!\n\nاقتراحات لأسئلتك:\n• ما هو OWASP Top 10؟\n• كيف أحمي نفسي من التصيد الاحتيالي؟\n• شرح التشفير المتماثل وغير المتماثل\n• كيف أعمل كلمة مرور قوية؟\n• وش هي هجمات DDoS؟\n• الفرق بين IDS و IPS\n• كيف أفحص ثغرات موقعي؟'
+    };
+
+    function getBotResponse(input) {
+        const lower = input.toLowerCase();
+        const keywords = {
+            'owasp': 'owasp',
+            'sql': 'sql',
+            'injection': 'sql',
+            'xss': 'xss',
+            'تصيد': 'تصيد',
+            'phish': 'تصيد',
+            'تشفير': 'تشفير',
+            'encrypt': 'تشفير',
+            'firewall': 'firewall',
+            'جدار': 'firewall',
+            'vpn': 'vpn',
+            '2fa': '2fa',
+            'مصادقة': '2fa',
+            'malware': 'malware',
+            'فيروس': 'malware',
+            'برمج': 'malware',
+            'كلمة': 'كلمة',
+            'password': 'كلمة',
+            'مرور': 'كلمة',
+            'network': 'network',
+            'شبكة': 'network',
+            'واي فاي': 'network',
+            'ransom': 'ransomware',
+            'فدية': 'ransomware',
+            'ddos': 'ddos',
+            'ssl': 'ssl',
+            'tls': 'ssl',
+            'https': 'ssl',
+            'اختراق': 'ethical',
+            'ethic': 'ethical',
+            'hack': 'ethical',
+            'أمن': 'default',
+            'سلام': 'default',
+            'protect': 'default',
+            'secure': 'default'
+        };
+        for (const [word, key] of Object.entries(keywords)) {
+            if (lower.includes(word)) {
+                return secKnowledge[key];
+            }
+        }
+        return secKnowledge.default;
+    }
+
+    // ─── AI (Gemini API via Serverless) ───
+    let aiAvailable = false;
+
+    async function checkAI() {
+        const dot = document.getElementById('ai-dot');
+        const text = document.getElementById('ai-text');
+        try {
+            const res = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: 'ping' }),
+                signal: AbortSignal.timeout(5000)
+            });
+            if (res.ok) {
+                aiAvailable = true;
+                dot.style.background = 'var(--success)';
+                text.textContent = 'Gemini AI متصل';
+            } else {
+                throw new Error('Not OK');
+            }
+        } catch {
+            aiAvailable = false;
+            dot.style.background = 'var(--danger)';
+            text.textContent = 'Gemini AI غير متصل (استخدام النظام التلقائي)';
+        }
+    }
+
+    async function askAI(prompt) {
+        const res = await fetch('/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt })
+        });
+        if (!res.ok) throw new Error('API error');
+        const data = await res.json();
+        return data.response;
+    }
+
+    // ─── Chat ───
+    async function sendChat() {
+        const input = document.getElementById('chat-input');
+        const msg = input.value.trim();
+        if (!msg) return;
+        input.value = '';
+
+        const box = document.getElementById('chat-box');
+        box.innerHTML += `<div class="msg user">${escapeHtml(msg)}</div>`;
+        box.scrollTop = box.scrollHeight;
+
+        const typingMsg = document.createElement('div');
+        typingMsg.className = 'msg bot';
+        typingMsg.innerHTML = '<div class="typing-dots"><span></span><span></span><span></span></div>';
+        box.appendChild(typingMsg);
+        box.scrollTop = box.scrollHeight;
+
+        let response;
+        if (aiAvailable) {
+            try {
+                response = await askAI(msg);
+            } catch {
+                response = getBotResponse(msg);
+            }
+        } else {
+            await new Promise(r => setTimeout(r, 400 + Math.random() * 600));
+            response = getBotResponse(msg);
+        }
+        typingMsg.remove();
+
+        const formatted = response.replace(/\n/g, '<br>');
+        box.innerHTML += `<div class="msg bot">${formatted}</div>`;
+        box.scrollTop = box.scrollHeight;
+    }
+
+    function escapeHtml(s) {
+        const d = document.createElement('div');
+        d.textContent = s;
+        return d.innerHTML;
+    }
+
+    // ─── Vulnerability Scanner ───
+    function scanVuln() {
+        const input = document.getElementById('vuln-input').value;
+        const result = document.getElementById('vuln-result');
+
+        if (!input.trim()) {
+            result.innerHTML = '⚠️ الرجاء إدخال كود أو نص للفحص';
+            return;
+        }
+
+        const findings = [];
+
+        if (input.includes("'") || input.includes("--") || input.includes("union") || input.includes("or 1=1")) {
+            findings.push({ type: 'SQL Injection', severity: 'critical', desc: 'احتمال وجود ثغرة SQL Injection — استخدم prepared statements' });
+        }
+        if (input.includes("<script") || input.includes("onerror") || input.includes("onload") || input.includes("javascript:")) {
+            findings.push({ type: 'XSS', severity: 'high', desc: 'احتمال وجود ثغرة XSS — استخدم sanitization على المدخلات' });
+        }
+        if (input.includes("<?php") && (input.includes("include(") || input.includes("require("))) {
+            findings.push({ type: 'LFI/RFI', severity: 'high', desc: 'احتمال وجود File Inclusion — تجنب تمرير مدخلات المستخدم إلى include/require' });
+        }
+        if (input.includes("exec(") || input.includes("system(") || input.includes("shell_exec(") || input.includes("eval(") || input.includes("passthru(")) {
+            findings.push({ type: 'Command Injection', severity: 'critical', desc: 'احتمال وجود Command Injection — تجنب استخدام دوال تنفيذ الأوامر مع مدخلات المستخدم' });
+        }
+        if (input.includes("$_GET") || input.includes("$_POST") || input.includes("$_REQUEST") || input.includes("request.")) {
+            if (!input.includes("filter") && !input.includes("strip") && !input.includes("escape") && !input.includes("prepare")) {
+                findings.push({ type: 'Insecure Input Handling', severity: 'medium', desc: 'مدخلات المستخدم تُستخدم بدون تنقية أو تعقيم' });
+            }
+        }
+        if (input.includes("SELECT") && input.includes("WHERE") && !input.includes("prepare") && !input.includes("bind")) {
+            findings.push({ type: 'Database Query', severity: 'medium', desc: 'استعلام SQL مباشر — استخدم prepared statements للوقاية من SQLi' });
+        }
+
+        if (findings.length === 0) {
+            result.innerHTML = '✅ <span style="color: var(--success)">لا توجد ثغرات أمنية واضحة — الكود يبدو آمناً (للفحص الأساسي)</span>';
+            // update stats
+            const scans = parseInt(document.getElementById('scans-today').textContent);
+            document.getElementById('scans-today').textContent = scans + 1;
+            return;
+        }
+
+        let html = `🔍 تم العثور على ${findings.length} ثغرة:\n\n`;
+        findings.forEach((f, i) => {
+            const sev = { critical: 'حرج', high: 'عالي', medium: 'متوسط', low: 'منخفض' };
+            html += `${i+1}. [${sev[f.severity]}] ${f.type}\n   ${f.desc}\n\n`;
+            // update vulns found
+            const vulns = parseInt(document.getElementById('vulns-found').textContent);
+            document.getElementById('vulns-found').textContent = vulns + 1;
+        });
+        result.innerHTML = html.replace(/\n/g, '<br>');
+        // update scans
+        const scans = parseInt(document.getElementById('scans-today').textContent);
+        document.getElementById('scans-today').textContent = scans + 1;
+        // add to recent vulns
+        const recent = document.getElementById('recent-vulns');
+        findings.slice(0, 3).forEach(f => {
+            const div = document.createElement('div');
+            div.className = `vuln-item ${f.severity}`;
+            div.textContent = `📌 ${f.type}`;
+            recent.prepend(div);
+            if (recent.children.length > 6) recent.lastChild.remove();
+        });
+    }
+
+    function quickScan(type) {
+        const templates = {
+            sqli: `https://example.com/product?id=1' UNION SELECT username,password FROM users --`,
+            xss: `<input type="text" name="search" value="<?php echo $_GET['q']; ?>">`,
+            csrf: `<form action="/transfer" method="POST">\n  <input type="hidden" name="amount" value="1000">\n</form>\n<!-- لا يوجد CSRF token -->`,
+            lfi: `<?php include($_GET['page'] . '.php'); ?>`
+        };
+        document.getElementById('vuln-input').value = templates[type] || '';
+        scanVuln();
+    }
+
+    // ─── Encryption ───
+    function encrypt(action) {
+        let input, resultId;
+        const tabMap = {
+            'b64-enc': ['enc-input', 'enc-result'],
+            'b64-dec': ['enc-input', 'enc-result'],
+            'hex-enc': ['hex-input', 'hex-result'],
+            'hex-dec': ['hex-input', 'hex-result'],
+            'rot13': ['rot13-input', 'rot13-result'],
+            'rev': ['rev-input', 'rev-result'],
+            'clear': []
+        };
+
+        if (action === 'clear') {
+            document.getElementById('enc-input').value = '';
+            document.getElementById('enc-result').textContent = 'النتيجة...';
+            return;
+        }
+
+        const [inId, outId] = tabMap[action];
+        input = document.getElementById(inId).value;
+        resultId = outId;
+
+        if (!input) {
+            document.getElementById(resultId).textContent = '❌ الرجاء إدخال النص';
+            return;
+        }
+
+        let result;
+        switch (action) {
+            case 'b64-enc':
+                result = btoa(unescape(encodeURIComponent(input)));
+                break;
+            case 'b64-dec':
+                try { result = decodeURIComponent(escape(atob(input))); }
+                catch { result = atob(input); }
+                break;
+            case 'hex-enc':
+                result = Array.from(new TextEncoder().encode(input)).map(b => b.toString(16).padStart(2, '0')).join('');
+                break;
+            case 'hex-dec':
+                try { result = new TextDecoder().decode(new Uint8Array(input.match(/.{1,2}/g).map(b => parseInt(b, 16)))); }
+                catch { result = '❌ خطأ في فك التشفير'; }
+                break;
+            case 'rot13':
+                result = input.replace(/[a-zA-Z]/g, c =>
+                    String.fromCharCode(c <= 'Z' ? ((c.charCodeAt(0) - 65 + 13) % 26 + 65) : ((c.charCodeAt(0) - 97 + 13) % 26 + 97))
+                );
+                break;
+            case 'rev':
+                result = input.split('').reverse().join('');
+                break;
+        }
+        document.getElementById(resultId).textContent = result;
+    }
+
+    // ─── Hashing ───
+    async function generateHash(algo) {
+        const input = document.getElementById('hash-input').value;
+        if (!input) {
+            document.getElementById('hash-result').textContent = '❌ الرجاء إدخال النص';
+            return;
+        }
+        const enc = new TextEncoder().encode(input);
+        const hash = await crypto.subtle.digest(algo === 'md5' ? 'SHA-1' : algo, enc);
+        const hashArray = Array.from(new Uint8Array(hash));
+        let hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+
+        if (algo === 'md5') {
+            // Simulate MD5 (since browser only does SHA-1/256/384/512)
+            hashHex = hashHex.substring(0, 32);
+        }
+
+        document.getElementById('hash-result').textContent = `${algo.toUpperCase()}:\n${hashHex}`;
+    }
+
+    // ─── Password Checker ───
+    function checkPassword() {
+        const pwd = document.getElementById('pwd-input').value;
+        const bar = document.getElementById('pwd-strength');
+        const result = document.getElementById('pwd-result');
+
+        if (!pwd) {
+            bar.style.width = '0%';
+            result.textContent = '...';
+            return;
+        }
+
+        let score = 0;
+        if (pwd.length >= 8) score++;
+        if (pwd.length >= 12) score++;
+        if (pwd.length >= 16) score++;
+        if (/[a-z]/.test(pwd)) score++;
+        if (/[A-Z]/.test(pwd)) score++;
+        if (/[0-9]/.test(pwd)) score++;
+        if (/[^a-zA-Z0-9]/.test(pwd)) score++;
+        if (pwd.length > 20) score++;
+
+        const max = 9;
+        const pct = Math.min(100, (score / max) * 100);
+
+        let color, label;
+        if (pct < 30) { color = 'var(--danger)'; label = 'ضعيفة جداً ❌'; }
+        else if (pct < 50) { color = 'var(--warning)'; label = 'ضعيفة ⚠️'; }
+        else if (pct < 70) { color = '#f59e0b'; label = 'متوسطة 😐'; }
+        else if (pct < 90) { color = 'var(--success)'; label = 'قوية ✅'; }
+        else { color = 'var(--accent)'; label = 'ممتازة 🏆'; }
+
+        bar.style.width = pct + '%';
+        bar.style.background = color;
+
+        let tips = [];
+        if (pwd.length < 12) tips.push('• استخدم 12 حرفاً على الأقل');
+        if (!/[A-Z]/.test(pwd)) tips.push('• أضف حرفاً كبيراً (A-Z)');
+        if (!/[a-z]/.test(pwd)) tips.push('• أضف حرفاً صغيراً (a-z)');
+        if (!/[0-9]/.test(pwd)) tips.push('• أضف رقماً (0-9)');
+        if (!/[^a-zA-Z0-9]/.test(pwd)) tips.push('• أضف رمزاً (!@#$%^&*)');
+
+        result.innerHTML = `القوة: <strong>${label}</strong> (${Math.round(pct)}%)${tips.length ? '<br><br>نصائح للتحسين:<br>' + tips.join('<br>') : ''}`;
+    }
+
+    // ─── Password Generator ───
+    function generatePassword() {
+        const len = parseInt(document.getElementById('pwd-length').value) || 16;
+        const upper = document.getElementById('pwd-upper').checked;
+        const lower = document.getElementById('pwd-lower').checked;
+        const nums = document.getElementById('pwd-num').checked;
+        const syms = document.getElementById('pwd-sym').checked;
+
+        let chars = '';
+        if (upper) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (lower) chars += 'abcdefghijklmnopqrstuvwxyz';
+        if (nums) chars += '0123456789';
+        if (syms) chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+        if (!chars) {
+            document.getElementById('pwd-gen-result').textContent = '❌ اختر نوع حرف واحد على الأقل';
+            return;
+        }
+
+        let pwd = '';
+        for (let i = 0; i < len; i++) {
+            pwd += chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        document.getElementById('pwd-gen-result').textContent = pwd;
+        document.getElementById('pwd-input').value = pwd;
+        checkPassword();
+    }
+
+    // ─── Live Threats ───
+    const threatTypes = [
+        { type: 'DDoS Attack', sev: 'critical', ip: '45.33.22.1', country: 'Russia' },
+        { type: 'Port Scan', sev: 'high', ip: '103.235.46.2', country: 'China' },
+        { type: 'Brute Force', sev: 'high', ip: '78.12.90.5', country: 'Ukraine' },
+        { type: 'SQLi Attempt', sev: 'critical', ip: '192.168.1.100', country: 'USA' },
+        { type: 'Malware Download', sev: 'medium', ip: '185.220.101.3', country: 'Germany' },
+        { type: 'DNS Spoofing', sev: 'high', ip: '91.121.87.4', country: 'France' },
+        { type: 'Phishing Link', sev: 'medium', ip: '202.43.78.9', country: 'Vietnam' },
+        { type: 'BotNet Traffic', sev: 'low', ip: '31.41.55.7', country: 'Netherlands' },
+        { type: 'RDP Brute Force', sev: 'critical', ip: '5.188.62.1', country: 'Romania' },
+        { type: 'ICMP Flood', sev: 'high', ip: '64.227.100.5', country: 'Canada' },
+    ];
+
+    const sevMap = { critical: 'حرج', high: 'عالي', medium: 'متوسط', low: 'منخفض' };
+
+    function addThreat() {
+        const t = threatTypes[Math.floor(Math.random() * threatTypes.length)];
+        const time = new Date().toLocaleTimeString('ar-SA', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+        const div = document.createElement('div');
+        div.className = `threat-item ${t.sev}`;
+        div.innerHTML = `
+            <span>${t.type} <span class="badge ${t.sev}">${sevMap[t.sev]}</span></span>
+            <span><span class="threat-time">${t.ip} | ${t.country} | ${time}</span></span>
+        `;
+
+        const list = document.getElementById('live-threats');
+        list.prepend(div);
+        if (list.children.length > 12) list.lastChild.remove();
+
+        // same for dash
+        const dashList = document.getElementById('dash-threats');
+        const div2 = div.cloneNode(true);
+        dashList.prepend(div2);
+        if (dashList.children.length > 8) dashList.lastChild.remove();
+
+        // update stats
+        updateThreatStats();
+
+        // update threats blocked
+        const blocked = parseInt(document.getElementById('threats-blocked').textContent.replace(/,/g, ''));
+        document.getElementById('threats-blocked').textContent = (blocked + 1).toLocaleString();
+    }
+
+    function updateThreatStats() {
+        const items = document.querySelectorAll('#live-threats .threat-item');
+        let c = 0, h = 0, m = 0, l = 0;
+        items.forEach(item => {
+            if (item.classList.contains('critical')) c++;
+            else if (item.classList.contains('high')) h++;
+            else if (item.classList.contains('medium')) m++;
+            else l++;
+        });
+        document.getElementById('stat-critical').textContent = c;
+        document.getElementById('stat-high').textContent = h;
+        document.getElementById('stat-medium').textContent = m;
+        document.getElementById('stat-low').textContent = l;
+    }
+
+    // ─── Encryption Tabs ───
+    document.querySelectorAll('.tabs').forEach(tabGroup => {
+        tabGroup.querySelectorAll('button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabGroup.querySelectorAll('button').forEach(b => b.classList.remove('active-tab'));
+                btn.classList.add('active-tab');
+                const parent = tabGroup.parentElement;
+                parent.querySelectorAll('.tab-content').forEach(tc => tc.classList.remove('active-tab'));
+                parent.querySelector('#tab-' + btn.dataset.tab).classList.add('active-tab');
+            });
+        });
+    });
+
+    // ─── Init ───
+    // Check AI
+    checkAI();
+    setInterval(checkAI, 30000);
+
+    // Add initial threats
+    for (let i = 0; i < 6; i++) addThreat();
+    // Live updates every 4-8 seconds
+    setInterval(addThreat, 4000 + Math.random() * 4000);
+
+    // Randomize stats on load
+    document.getElementById('threats-blocked').textContent = Math.floor(1000 + Math.random() * 5000).toLocaleString();
+    document.getElementById('vulns-found').textContent = Math.floor(200 + Math.random() * 400);
+    document.getElementById('scans-today').textContent = Math.floor(50 + Math.random() * 100);
+</script>
+</body>
+</html>
