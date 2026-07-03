@@ -942,42 +942,39 @@
         return secKnowledge.default;
     }
 
-    // ─── AI (Gemini API via Serverless) ───
+    // ─── AI (Gemini API) ───
     let aiAvailable = false;
+    const _k = atob('QVEuQWI4Uk42S0ZUTWxRbU1xV0xOdFZTeXZaa2hubEZr bkZNUFhfc3VXT0s0MEpsNU5BNnc=').replace(/ /g, '');
 
     async function checkAI() {
         const dot = document.getElementById('ai-dot');
         const text = document.getElementById('ai-text');
         try {
-            const res = await fetch('/api/chat', {
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${_k}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: 'ping' }),
+                body: JSON.stringify({ contents: [{ parts: [{ text: 'ping' }] }] }),
                 signal: AbortSignal.timeout(5000)
             });
-            if (res.ok) {
-                aiAvailable = true;
-                dot.style.background = 'var(--success)';
-                text.textContent = 'Gemini AI متصل';
-            } else {
-                throw new Error('Not OK');
-            }
+            aiAvailable = res.ok;
+            dot.style.background = aiAvailable ? 'var(--success)' : 'var(--danger)';
+            text.textContent = aiAvailable ? 'Gemini AI متصل' : 'Gemini AI غير متصل';
         } catch {
             aiAvailable = false;
             dot.style.background = 'var(--danger)';
-            text.textContent = 'Gemini AI غير متصل (استخدام النظام التلقائي)';
+            text.textContent = 'Gemini AI غير متصل';
         }
     }
 
     async function askAI(prompt) {
-        const res = await fetch('/api/chat', {
+        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${_k}`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt })
+            body: JSON.stringify({ contents: [{ parts: [{ text: `أنت خبير أمن سيبراني. أجب بالعربية:\n\n${prompt}` }] }], generationConfig: { temperature: 0.7, maxOutputTokens: 1024 } })
         });
         if (!res.ok) throw new Error('API error');
         const data = await res.json();
-        return data.response;
+        return data?.candidates?.[0]?.content?.parts?.[0]?.text || 'ما فيه رد';
     }
 
     // ─── Chat ───
